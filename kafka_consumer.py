@@ -28,9 +28,22 @@ def produce(topic, config):
 
   # produces a sample message
   current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-  key = random_string()
-  #key= "test3"
-  value = f'{{"checkout_id":"{key}","timestamp":"{current_datetime}","status":"done"}}'
+  #key = random_string()
+  key= "test3"
+  value = json.dumps({
+  "checkout_id": key, 
+  "timestamp": current_datetime, 
+  "status": "done",
+  "user_id": "user_id",
+  "items": [
+    {
+      "item_id": "item_identifier",
+      "quantity": 1,
+      "price": 12.99
+    }
+  ],
+  "total_price": 12.99
+})
   producer.produce(topic, key=key, value=value)
   print(f"Produced message to topic {topic}: key = {key:12} value = {value:12}")
 
@@ -45,7 +58,12 @@ def produce_payment(topic, config, checkout_id):
     # prepares a payment message using the same checkout_id
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     payment_status = "done"  # Example status (done or waiting), adjust as needed
-    value = f'{{"checkout_id":"{checkout_id}","timestamp":"{current_datetime}","payment_status":"{payment_status}"}}'
+    value = json.dumps({
+    "checkout_id": checkout_id,
+    "timestamp": current_datetime,
+    "payment_status": payment_status,
+    "total_price": 12.99
+    })
 
     # produces the payment message
     producer.produce(topic, key=checkout_id, value=value)

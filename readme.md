@@ -1,26 +1,60 @@
-## Initialiser Consumer et Producer
+## Les topics existants :
+J'ai créé un cluster Kafka sur Confluent Kafka, et j'ai mis en place 3 topics (checkout, payment et order).
+- Format json de topic checkout (value): 
+```bash
+{
+  "checkout_id": key, 
+  "timestamp": current_datetime, 
+  "status": "done",
+  "user_id": "user_id",
+  "items": [
+    {
+      "item_id": "item_identifier",
+      "quantity": 1,
+      "price": 12.99
+    }
+  ],
+  "total_price": 12.99
+}
+``` 
+- Format json de topic payment (value): 
+```bash
+{
+    "checkout_id": checkout_id,
+    "timestamp": current_datetime,
+    "payment_status": payment_status,
+    "total_price": 12.99
+}
+``` 
+- Format json de topic order (value): 
+```bash
+{
+    "payment_id": payment_id,
+    "status": status,
+    "timestamp": current_datetime
+}
+``` 
 
-## Configurer un Consumer Kafka
-Configurer un consumer Kafka avec les paramètres nécessaires pour se connecter au cluster Kafka.
+## Initialiser et Configurer kafka Consumer et Producer
 
-## Configurer un Producer Kafka
-Configurer un producer Kafka avec les paramètres pour la production de messages.
+- Configurer un Consumer Kafka avec les paramètres nécessaires pour se connecter au cluster Kafka.
+
+- Configurer un Producer Kafka avec les paramètres pour la production de messages.
 
 ## Souscrire Consumer au Topic Payment
 
-Le consumer s'abonne au topic "payment" pour écouter les messages de statut de payment.
+- Le consumer s'abonne au topic "payment" pour écouter les messages de statut de payment.
 
-## Consommer les Messages du Topic Payment
-
-Interroger continuellement pour de nouveaux messages sur le topic "payment".
+- Consommer les Messages du Topic Payment, Interroger continuellement pour de nouveaux messages sur le topic "payment".
 Pour chaque message, décoder et extraire le statut de payment et l'ID de payment.
 
 ## Traiter le Statut de Payment
+- Un message sur le topic checkout est généré, ce qui produit également un message payment avec le statut "waiting", en attendant que l'utilisateur effectue le paiement.
 
 ### Si le statut de payment est "done":
 - Produire immédiatement un message au topic "order" avec le statut "done".
 
-### Sinon (si le statut de payment n'est pas "done"):
+### Sinon (si le statut de payment est "waiting"):
 - Entrer dans une boucle d'attente pour les mises à jour (jusqu'à 5 minutes):
   - Dans la boucle, interroger pour de nouveaux messages sur le topic "payment".
   - Vérifier si un nouveau message correspond au même ID de payment et a un statut mis à jour.
@@ -32,4 +66,16 @@ Pour chaque message, décoder et extraire le statut de payment et l'ID de paymen
 
 ## Produire le Message de l'Order
 
-En fonction du statut final déterminé, produire un message au topic "order" indiquant le résultat ("done" ou "failed") avec l'ID de payment et un timestamp.
+En fonction du statut final déterminé par les messages du topic payment, produire un message au topic "order" indiquant le résultat ("done" ou "failed") avec l'ID de payment et un timestamp.
+
+# Installation et éxecution :
+ 
+```bash
+pip install confluent-kafka
+``` 
+```bash
+python .\kafka_consumer.py
+``` 
+```bash
+python .\kafka_payment.py
+``` 
