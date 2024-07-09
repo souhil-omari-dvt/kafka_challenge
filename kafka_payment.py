@@ -42,7 +42,7 @@ def consume_payments_and_produce_orders(config, payment_topic, order_topic):
                 produce_order_message(producer, order_topic, payment_id, "done")
             else:
                 # Start a timer for 5 mins to wait for the payment status to be updated
-                end_time = time.time() + 30 # 20 seconds for testing
+                end_time = time.time() + 300 # 20 seconds for testing
                 updated_payment_status = None
 
                 while time.time() < end_time:
