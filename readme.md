@@ -53,6 +53,9 @@ Pour chaque message, décoder et extraire le statut de payment et l'ID de paymen
 
 ### Si le statut de payment est "done":
 - Produire immédiatement un message au topic "order" avec le statut "done".
+```python
+produce_order_message(producer, order_topic, payment_id, "done")
+``` 
 
 ### Sinon (si le statut de payment est "waiting"):
 - Entrer dans une boucle d'attente pour les mises à jour (jusqu'à 5 minutes):
@@ -64,6 +67,13 @@ Pour chaque message, décoder et extraire le statut de payment et l'ID de paymen
   - Si une mise à jour a été trouvée et que le statut est "done", produire un message au topic "order" avec le statut "done".
   - Si aucune mise à jour n'a été trouvée ou si le statut n'est pas "done", produire un message au topic "order" avec le statut "failed".
 
+```python
+    if updated_payment_status == "done":
+        produce_order_message(producer, order_topic, payment_id, "done")
+    else:
+    # If no update or status is not done after 5 minutes, assume failure
+    produce_order_message(producer, order_topic, payment_id, "failed")
+``` 
 ## Produire le Message de l'Order
 
 En fonction du statut final déterminé par les messages du topic payment, produire un message au topic "order" indiquant le résultat ("done" ou "failed") avec l'ID de payment et un timestamp.
