@@ -71,8 +71,8 @@ produce_order_message(producer, order_topic, payment_id, "done")
     if updated_payment_status == "done":
         produce_order_message(producer, order_topic, payment_id, "done")
     else:
-    # If no update or status is not done after 5 minutes, assume failure
-    produce_order_message(producer, order_topic, payment_id, "failed")
+        # If no update or status is not done after 5 minutes, assume failure
+        produce_order_message(producer, order_topic, payment_id, "failed")
 ``` 
 ## Produire le Message de l'Order
 
